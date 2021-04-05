@@ -1,0 +1,105 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "GridContainer",
+"class": "FixedFlexGridContainer",
+"language": "GDScript",
+"path": "res://addons/krakatoa/nodes/control/fixed_flex_grid_container.gd"
+}, {
+"base": "PersistentFileDialog",
+"class": "FullWindowFileDialog",
+"language": "GDScript",
+"path": "res://addons/krakatoa/nodes/control/full_window_file_dialog.gd"
+}, {
+"base": "Resource",
+"class": "ICOGenData",
+"language": "GDScript",
+"path": "res://icogen_data/icogen_data.gd"
+}, {
+"base": "Reference",
+"class": "Log",
+"language": "GDScript",
+"path": "res://addons/krakatoa/globals/log.gd"
+}, {
+"base": "FileDialog",
+"class": "PersistentFileDialog",
+"language": "GDScript",
+"path": "res://addons/krakatoa/nodes/control/persistent_file_dialog.gd"
+}, {
+"base": "Node",
+"class": "SignalRelay",
+"language": "GDScript",
+"path": "res://addons/krakatoa/nodes/signal_relay/signal_relay.gd"
+} ]
+_global_script_class_icons={
+"FixedFlexGridContainer": "res://addons/krakatoa/nodes/control/iconography/fixed_flex_grid_container_icon.png",
+"FullWindowFileDialog": "res://addons/krakatoa/nodes/control/iconography/full_window_file_dialog.png",
+"ICOGenData": "",
+"Log": "",
+"PersistentFileDialog": "res://addons/krakatoa/nodes/control/iconography/persistent_file_dialog.png",
+"SignalRelay": "res://addons/krakatoa/nodes/signal_relay/iconography/signal_relay_icon.png"
+}
+
+[application]
+
+config/name="ICOGen"
+config/description="A GUI based .ico file creator that supports mixed icon sizes, and provides fine-grained control over source images and automatic image resizing."
+run/main_scene="res://ui_elements/main/main_ui.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="dfaction/icogen"
+run/low_processor_mode=true
+boot_splash/image="res://branding/splash.png"
+boot_splash/bg_color=Color( 0.12549, 0.12549, 0.12549, 1 )
+config/icon="res://branding/icon.png"
+
+[autoload]
+
+ICOGen="*res://auto_load/icogen.gd"
+
+[display]
+
+window/size/width=271
+window/dpi/allow_hidpi=true
+
+[editor_plugins]
+
+enabled=PoolStringArray( "krakatoa" )
+
+[importer_defaults]
+
+texture={
+"compress/bptc_ldr": 0,
+"compress/hdr_mode": 0,
+"compress/lossy_quality": 0.7,
+"compress/mode": 0,
+"compress/normal_map": 0,
+"detect_3d": false,
+"flags/anisotropic": false,
+"flags/filter": false,
+"flags/mipmaps": false,
+"flags/repeat": 0,
+"flags/srgb": 2,
+"process/HDR_as_SRGB": false,
+"process/fix_alpha_border": true,
+"process/invert_color": false,
+"process/premult_alpha": false,
+"size_limit": 0,
+"stream": false,
+"svg/scale": 1.0
+}
+
+[rendering]
+
+quality/2d/use_nvidia_rect_flicker_workaround=true
+quality/2d/use_pixel_snap=true
+batching/precision/uv_contract=true
+environment/default_clear_color=Color( 0.12549, 0.12549, 0.12549, 1 )
+environment/default_environment="res://default_env.tres"

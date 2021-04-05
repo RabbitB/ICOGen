@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://ui_elements/size_selector/size_selector.gd" type="Script" id=1]
+
+[node name="SizeSelector" type="MenuButton"]
+margin_right = 93.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "SELECT IMAGE SIZES"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
