@@ -3,10 +3,12 @@ extends Node
 
 
 var _db: Dictionary
+var _db_cache: Dictionary
 
 
 func _init() -> void:
 	_db = Dictionary()
+	_db_cache = Dictionary()
 
 
 func load(script_name: String, script_path: String) -> Script:
@@ -23,17 +25,30 @@ func load(script_name: String, script_path: String) -> Script:
 	if loaded_script != null:
 		_db[script_name] = loaded_script
 		_db[script_path] = script_name
+		_db_cache[script_name] = Dictionary()
 
 	return loaded_script
 
 
-func add_class(script_name: String, script: Script) -> void:
+func add_class(script_name: String, script: Script) -> bool:
 	if !_db.has(script.resource_path) && !_db.has(script_name):
 		_db[script_name] = script
 		_db[script.resource_path] = script_name
-	else:
-		assert(false, "Class %s is already in the database." % script_name)
-		Log.error("Class %s is already in the database", [script_name])
+		_db_cache[script_name] = Dictionary()
+		return true
+
+	return false
+
+
+func clear_cache(a_class: String = ""):
+	if a_class.empty():
+		for class_to_clear in _db_cache:
+			_db_cache[class_to_clear] = Dictionary()
+		return
+	elif _db_cache.has(a_class):
+		_db_cache[a_class] = Dictionary()
+
+	return
 
 
 func class_exists(a_class: String) -> bool:
@@ -65,8 +80,17 @@ func class_get_integer_constant_list(a_class: String, no_inheritance: bool = fal
 
 	var class_script: Script = _db.get(a_class)
 	if no_inheritance:
-		return class_script.get_script_constant_map().keys()
+		if _db_cache[a_class].has("int_const_list_no_inheritance"):
+			return _db_cache[a_class].int_const_list_no_inheritance
+
+		var int_const_list: Array = class_script.get_script_constant_map().keys()
+
+		_db_cache[a_class].int_const_list_no_inheritance = int_const_list
+		return int_const_list
 	else:
+		if _db_cache[a_class].has("int_const_list"):
+			return _db_cache[a_class].int_const_list
+
 		var all_constants: Array = class_script.get_script_constant_map().keys()
 		var base_class: Script = class_script.get_base_script()
 		while base_class != null:
@@ -76,6 +100,7 @@ func class_get_integer_constant_list(a_class: String, no_inheritance: bool = fal
 		var native_base_type: String = class_script.get_instance_base_type()
 		all_constants += Array(ClassDB.class_get_integer_constant_list(native_base_type))
 
+		_db_cache[a_class].int_const_list = all_constants
 		return all_constants
 
 
@@ -85,8 +110,17 @@ func class_get_method_list(a_class: String, no_native_inheritance: bool = false)
 
 	var class_script: Script = _db.get(a_class)
 	if no_native_inheritance:
-		return class_script.get_script_method_list()
+		if _db_cache[a_class].has("method_list_no_inheritance"):
+			return _db_cache[a_class].method_list_no_inheritance
+
+		var method_list: Array = class_script.get_script_method_list()
+
+		_db_cache[a_class].method_list_no_inheritance = method_list
+		return method_list
 	else:
+		if _db_cache[a_class].has("method_list"):
+			return _db_cache[a_class].method_list
+
 		#	The docs don't make it clear, but get_script_method_list returns
 		#	all methods including from inherited scripts, but not from native
 		#	inherited classes.
@@ -95,6 +129,7 @@ func class_get_method_list(a_class: String, no_native_inheritance: bool = false)
 
 		all_methods += ClassDB.class_get_method_list(native_base_type)
 
+		_db_cache[a_class].method_list = all_methods
 		return all_methods
 
 
@@ -104,8 +139,17 @@ func class_get_property_list(a_class: String, no_native_inheritance: bool = fals
 
 	var class_script: Script = _db.get(a_class)
 	if no_native_inheritance:
-		return class_script.get_script_property_list()
+		if _db_cache[a_class].has("property_list_no_inheritance"):
+			return _db_cache[a_class].property_list_no_inheritance
+
+		var property_list: Array = class_script.get_script_property_list()
+
+		_db_cache[a_class].property_list_no_inheritance = property_list
+		return property_list
 	else:
+		if _db_cache[a_class].has("property_list"):
+			return _db_cache[a_class].property_list
+
 		#	The docs don't make it clear, but get_script_property_list returns
 		#	all properties including from inherited scripts, but not from native
 		#	inherited classes.
@@ -114,6 +158,7 @@ func class_get_property_list(a_class: String, no_native_inheritance: bool = fals
 
 		all_props += ClassDB.class_get_property_list(native_base_type)
 
+		_db_cache[a_class].property_list = all_props
 		return all_props
 
 
@@ -139,8 +184,17 @@ func class_get_signal_list(a_class: String, no_native_inheritance: bool = false)
 
 	var class_script: Script = _db.get(a_class)
 	if no_native_inheritance:
-		return class_script.get_script_signal_list()
+		if _db_cache[a_class].has("signal_list_no_inheritance"):
+			return _db_cache[a_class].signal_list_no_inheritance
+
+		var signal_list: Array = class_script.get_script_signal_list()
+
+		_db_cache[a_class].signal_list_no_inheritance = signal_list
+		return signal_list
 	else:
+		if _db_cache[a_class].has("signal_list"):
+			return _db_cache[a_class].signal_list
+
 		#	The docs don't make it clear, but get_script_signal_list returns
 		#	all signals including from inherited scripts, but not from native
 		#	inherited classes.
@@ -149,6 +203,7 @@ func class_get_signal_list(a_class: String, no_native_inheritance: bool = false)
 
 		all_signals += ClassDB.class_get_signal_list(native_base_type)
 
+		_db_cache[a_class].signal_list = all_signals
 		return all_signals
 
 
