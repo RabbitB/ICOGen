@@ -265,6 +265,13 @@ func get_parent_class(a_class: String, return_native_parent: bool = true) -> Str
 	return ""
 
 
+func get_native_parent_class(a_class: String) -> String:
+	if !_db.has(a_class):
+		return ""
+
+	return _db.get(a_class).get_instance_base_type()
+
+
 func is_parent_class(a_class: String, ancestor: String) -> bool:
 	if !_db.has(a_class) || !_db.has(ancestor):
 		return false
