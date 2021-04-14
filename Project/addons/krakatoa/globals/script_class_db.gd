@@ -55,26 +55,47 @@ func class_exists(a_class: String) -> bool:
 	return _db.has(a_class)
 
 
+func class_get_name(a_class: String) -> String:
+	var retrieved_value = _db.get(a_class)
+	if typeof(retrieved_value) == TYPE_STRING:
+		return retrieved_value
+	elif retrieved_value is Script:
+		return a_class
+
+	return ""
+
+
+func class_get_script(a_class: String) -> Script:
+	var retrieved_value = _db.get(a_class)
+	if typeof(retrieved_value) == TYPE_STRING:
+		return _db[retrieved_value]
+
+	return retrieved_value
+
+
 func class_get_integer_constant(a_class: String, constant_name: String) -> int:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return 0
 
 	var class_script: Script = _db.get(a_class)
 	var constant_map: Dictionary
 
-	while class_script != null:
-		constant_map = class_script.get_script_constant_map()
+	var base_script: Script = class_script
+	while base_script != null:
+		constant_map = base_script.get_script_constant_map()
 		if constant_map.has(constant_name):
 			return constant_map[constant_name]
 
-		class_script = class_script.get_base_script()
+		base_script = base_script.get_base_script()
 
 	return ClassDB.class_get_integer_constant(
-			_db.get(a_class).get_instance_base_type(),
+			class_script.get_instance_base_type(),
 			constant_name)
 
 
 func class_get_integer_constant_list(a_class: String, no_inheritance: bool = false) -> Array:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return []
 
@@ -105,6 +126,7 @@ func class_get_integer_constant_list(a_class: String, no_inheritance: bool = fal
 
 
 func class_get_method_list(a_class: String, no_native_inheritance: bool = false) -> Array:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return []
 
@@ -134,6 +156,7 @@ func class_get_method_list(a_class: String, no_native_inheritance: bool = false)
 
 
 func class_get_property_list(a_class: String, no_native_inheritance: bool = false) -> Array:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return []
 
@@ -163,6 +186,7 @@ func class_get_property_list(a_class: String, no_native_inheritance: bool = fals
 
 
 func class_get_signal(a_class: String, signal_name: String) -> Dictionary:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return {}
 
@@ -179,6 +203,7 @@ func class_get_signal(a_class: String, signal_name: String) -> Dictionary:
 
 
 func class_get_signal_list(a_class: String, no_native_inheritance: bool = false) -> Array:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return []
 
@@ -225,6 +250,7 @@ func class_has_method(
 
 
 func class_has_signal(a_class: String, signal_name: String) -> bool:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return false
 
@@ -236,22 +262,33 @@ func class_has_signal(a_class: String, signal_name: String) -> bool:
 
 
 func get_class_list() -> Array:
-	return _db.keys()
+	var classes: Array = []
+	for a_class in _db:
+		if _db[a_class] is Script:
+			classes.append(a_class)
+
+	return classes
 
 
 func get_inheriters_from_class(a_class: String) -> Array:
+	a_class = class_get_name(a_class)
 	var inheriters: Array = []
+
 	if !_db.has(a_class):
 		return inheriters
 
-	for other_class in _db.keys:
-		if a_class != other_class && is_parent_class(other_class, a_class):
+	for other_class in _db:
+		if \
+				_db[other_class] is Script && \
+				a_class != other_class && \
+				is_parent_class(other_class, a_class):
 			inheriters.append(other_class)
 
 	return inheriters
 
 
 func get_parent_class(a_class: String, return_native_parent: bool = true) -> String:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return ""
 
@@ -266,6 +303,7 @@ func get_parent_class(a_class: String, return_native_parent: bool = true) -> Str
 
 
 func get_native_parent_class(a_class: String) -> String:
+	a_class = class_get_name(a_class)
 	if !_db.has(a_class):
 		return ""
 
@@ -273,6 +311,9 @@ func get_native_parent_class(a_class: String) -> String:
 
 
 func is_parent_class(a_class: String, ancestor: String) -> bool:
+	a_class = class_get_name(a_class)
+	ancestor = class_get_name(ancestor)
+
 	if !_db.has(a_class) || !_db.has(ancestor):
 		return false
 
