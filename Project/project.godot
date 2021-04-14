@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "ClassInfo",
+"language": "GDScript",
+"path": "res://addons/krakatoa/globals/class_info.gd"
+}, {
 "base": "GridContainer",
 "class": "FixedFlexGridContainer",
 "language": "GDScript",
@@ -40,6 +45,7 @@ _global_script_classes=[ {
 "path": "res://addons/krakatoa/nodes/signal_relay/signal_relay.gd"
 } ]
 _global_script_class_icons={
+"ClassInfo": "",
 "FixedFlexGridContainer": "res://addons/krakatoa/nodes/control/iconography/fixed_flex_grid_container_icon.png",
 "FullWindowFileDialog": "res://addons/krakatoa/nodes/control/iconography/full_window_file_dialog.png",
 "ICOGenData": "",
