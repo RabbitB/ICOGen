@@ -86,6 +86,7 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="item_selected" from="Options" to="." method="_on_Options_item_selected"]
 [connection signal="pressed" from="SelectFile" to="." method="_on_SelectFile_pressed"]
 [connection signal="pressed" from="RemoveFile" to="." method="_on_RemoveFile_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

@@ -12,6 +12,15 @@ onready var _select_file: TextureButton = $SelectFile as TextureButton
 onready var _remove_file: TextureButton = $RemoveFile as TextureButton
 
 
+func _ready() -> void:
+# warning-ignore:return_value_discarded
+	ICOGen.get_signal_relay().connect_relay(
+			"source_changed",
+			ICOGen.get_active_data(),
+			self,
+			"_on_source_changed")
+
+
 func _update_options() -> void:
 	var active_data: ICOGenData = ICOGen.get_active_data()
 	var orig_selected_size: int = _options.get_selected_id()
@@ -84,8 +93,8 @@ func _on_RemoveFile_pressed() -> void:
 	var active_data: ICOGenData = ICOGen.get_active_data()
 	active_data.remove_source_image(image_size)
 
-	_update_file_buttons()
 	_update_options()
+	_update_file_buttons()
 
 
 func _on_FileDialog_file_selected(path: String) -> void:
@@ -95,6 +104,12 @@ func _on_FileDialog_file_selected(path: String) -> void:
 		Log.error("Could not add '%s' as a source; encountered error: %s" %
 				[path, Log.get_error_description(err)])
 
-	_update_file_buttons()
 	_update_options()
+	_update_file_buttons()
+
+
+func _on_source_changed(for_size: int, _source: Object) -> void:
+	if image_size == for_size:
+		_update_options()
+		_update_file_buttons()
 
