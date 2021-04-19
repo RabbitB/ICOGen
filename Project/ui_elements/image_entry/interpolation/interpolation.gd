@@ -13,6 +13,7 @@ func _ready() -> void:
 # warning-ignore:return_value_discarded
 	ICOGen.get_signal_relay().connect_relay(
 			"interpolation_mode_changed",
+			ICOGen.get_active_data(),
 			self,
 			"_on_interpolation_mode_changed")
 
@@ -22,6 +23,7 @@ func _ready() -> void:
 
 func _set_image_size(new_size: int) -> void:
 	image_size = new_size
+
 	_update_size_indicator()
 	_update_options()
 
