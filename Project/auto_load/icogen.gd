@@ -1,3 +1,4 @@
+tool
 extends Node
 
 
@@ -38,11 +39,8 @@ func set_active_data(new_data: ICOGenData) -> void:
 
 
 func _setup_relays() -> void:
-	for size in ICOGenData.ImageSize.values():
-		var size_tag: String = ICOGenData.get_dimensions_string(size)
-
-		_signal_relay.add_relay("interpolation_mode_changed", _active_data, size_tag)
-		_signal_relay.add_relay("source_changed", _active_data, size_tag)
-		_signal_relay.add_relay("source_override_changed", _active_data, size_tag)
-		_signal_relay.add_relay("image_refreshed", _active_data, size_tag)
+	_signal_relay.add_relay("interpolation_mode_changed", _active_data)
+	_signal_relay.add_relay("source_changed", _active_data)
+	_signal_relay.add_relay("source_override_changed", _active_data)
+	_signal_relay.add_relay("image_refreshed", _active_data)
 
