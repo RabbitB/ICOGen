@@ -68,8 +68,8 @@ config/icon="res://branding/icon.png"
 
 [autoload]
 
-ICOGen="res://auto_load/icogen.gd"
 ScriptClassDB="*res://addons/krakatoa/globals/script_class_db.gd"
+ICOGen="*res://auto_load/icogen.gd"
 
 [display]
 
