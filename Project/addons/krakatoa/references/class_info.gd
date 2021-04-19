@@ -112,6 +112,7 @@ func has_signal(signal_name: String) -> bool:
 		LOOSE_SCRIPT:
 			if _script.has_script_signal(signal_name):
 				return true
+
 			return ClassDB.class_has_signal(_script.get_instance_base_type(), signal_name)
 		_:
 			return false
@@ -124,9 +125,14 @@ func get_signal(signal_name: String) -> Dictionary:
 		SCRIPT_DB:
 			return ScriptClassDB.class_get_signal(_class, signal_name)
 		LOOSE_SCRIPT:
+			for signal_info in _script.get_script_signal_list():
+				if signal_info.name == signal_name:
+					return signal_info
+
 			for signal_info in _script.get_signal_list():
 				if signal_info.name == signal_name:
 					return signal_info
+
 			return {}
 		_:
 			return {}
