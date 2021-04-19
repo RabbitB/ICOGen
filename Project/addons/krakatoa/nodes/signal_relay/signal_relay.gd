@@ -14,7 +14,7 @@ func _init() -> void:
 
 func connect_relay(
 		signal_name: String,
-		class_hint: String,
+		class_hint,
 		target: Object,
 		method: String,
 		binds: Array = [],
@@ -50,7 +50,6 @@ func disconnect_relay(
 
 func add_relay(signal_name: String, source: Object, tag: String = "") -> void:
 	var relay_name: String = RelayProxy.get_proxy_name(signal_name, tag)
-	var source_class: String = source.get_class()
 
 	if !_relays.has(relay_name):
 		_relays[relay_name] = []
@@ -58,7 +57,7 @@ func add_relay(signal_name: String, source: Object, tag: String = "") -> void:
 	var match_found: bool = false
 	var relay_list: Array = _relays[relay_name]
 	for relay in relay_list:
-		if relay.matches_signal(signal_name, source_class, tag):
+		if relay.matches_signal(signal_name, source, tag):
 			relay.add_relay(source)
 
 			match_found = true
@@ -72,7 +71,6 @@ func add_relay(signal_name: String, source: Object, tag: String = "") -> void:
 
 func remove_relay(signal_name: String, source: Object, tag: String = "") -> void:
 	var relay_name: String = RelayProxy.get_proxy_name(signal_name, tag)
-	var source_class: String = source.get_class()
 
 	if !_relays.has(relay_name):
 		return
@@ -80,7 +78,7 @@ func remove_relay(signal_name: String, source: Object, tag: String = "") -> void
 	var found_relay: RelayProxy
 	var relay_list: Array = _relays[relay_name]
 	for relay in relay_list:
-		if relay.matches_signal(signal_name, source_class, tag):
+		if relay.matches_signal(signal_name, source, tag):
 			found_relay = relay
 			break
 
