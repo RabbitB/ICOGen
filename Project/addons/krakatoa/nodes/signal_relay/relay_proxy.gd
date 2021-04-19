@@ -4,56 +4,62 @@ extends Reference
 var proxy_name: String setget _read_only_property
 var signal_name: String setget _read_only_property
 var tag: String setget _read_only_property
-var class_hint: String setget _read_only_property
+var class_hint: ClassInfo setget _read_only_property
 
 var _callback_name: String
 
 
-func _init(for_signal: String, with_tag: String, for_class: String = "") -> void:
+func _init(for_signal: String, with_tag: String, for_class = null) -> void:
 	signal_name = for_signal
 	tag = with_tag
 
 	proxy_name = get_proxy_name(signal_name, tag)
 
-	if !for_class.empty():
+	if for_class != null:
 		_setup_signals(for_class)
 
 
 func add_relay(source: Object) -> void:
-	var source_class: String = source.get_class()
+	var class_info: ClassInfo = ClassInfo.new(source)
 	if !source.has_signal(signal_name):
 		Log.error(
 				"Object of type %s has no signal named %s",
-				[source_class, signal_name])
+				[class_info.get_class_name(), signal_name])
 		return
 
-	if class_hint.empty():
-		_setup_signals(source_class)
-	elif !ClassDB.is_parent_class(class_hint, source_class):
+	if class_hint == null:
+		_setup_signals(source)
+	elif !class_info.inherits_from(class_hint):
 		Log.error(
 				"This SignalProxy is already setup to relay signal %s on class %s. Cannot relay a different signal with the same name from class %s. Please create a new SignalProxy.",
-				[signal_name, class_hint, source_class])
+				[signal_name, class_hint.get_class_name(), class_info.get_class_name()])
 
 	if !source.is_connected(signal_name, self, _callback_name):
 		source.connect(signal_name, self, _callback_name, [weakref(source)])
 
 
-func matches_signal(other_signal: String, from_class: String, for_tag: String) -> bool:
-	return \
-			other_signal == signal_name && \
-			ClassDB.is_parent_class(class_hint, from_class) && tag == for_tag
+func matches_signal(other_signal: String, from_class, for_tag: String) -> bool:
+	if other_signal != signal_name:
+		return false
+
+	if for_tag != tag:
+		return false
+
+	var class_info: ClassInfo = ClassInfo.new(from_class)
+	return class_info.inherits_from(class_hint)
 
 
 static func get_proxy_name(name: String, tag: String) -> String:
 	return "%s_%s" % [tag, name]
 
 
-func _setup_signals(for_class: String) -> void:
-	if !ClassDB.class_has_signal(for_class, signal_name):
-		Log.error("Class %s has no signal named %s", [for_class, signal_name])
+func _setup_signals(for_class) -> void:
+	var class_info: ClassInfo = ClassInfo.new(for_class)
+	if !class_info.has_signal(signal_name):
+		Log.error("Class %s has no signal named %s", [class_info.get_class_name(), signal_name])
 		return
 
-	var args_info: Array = ClassDB.class_get_signal(class_hint, signal_name).args
+	var args_info: Array = class_info.get_signal(signal_name).args
 	var args_count: int = args_info.size()
 
 	if args_count > 10:
@@ -66,7 +72,7 @@ func _setup_signals(for_class: String) -> void:
 	args_info.append({ "name": "source", "type": TYPE_OBJECT })
 
 	_callback_name = "_proxy_callback_%d" % args_count
-	class_hint = for_class
+	class_hint = class_info
 
 	add_user_signal(proxy_name, args_info)
 
