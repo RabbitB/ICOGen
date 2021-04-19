@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "ClassInfo",
 "language": "GDScript",
-"path": "res://addons/krakatoa/globals/class_info.gd"
+"path": "res://addons/krakatoa/references/class_info.gd"
 }, {
 "base": "GridContainer",
 "class": "FixedFlexGridContainer",
