@@ -73,7 +73,7 @@ ICOGen="*res://auto_load/icogen.gd"
 
 [display]
 
-window/size/width=271
+window/size/width=310
 window/dpi/allow_hidpi=true
 
 [editor_plugins]
@@ -105,8 +105,9 @@ texture={
 
 [rendering]
 
-quality/2d/use_nvidia_rect_flicker_workaround=true
-quality/2d/use_pixel_snap=true
+2d/snapping/use_gpu_pixel_snap=true
 batching/precision/uv_contract=true
 environment/default_clear_color=Color( 0.12549, 0.12549, 0.12549, 1 )
 environment/default_environment="res://default_env.tres"
+quality/2d/use_nvidia_rect_flicker_workaround=true
+quality/2d/use_pixel_snap=true
