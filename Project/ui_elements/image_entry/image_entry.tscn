@@ -9,8 +9,7 @@
 
 [node name="ImageEntry" type="PanelContainer"]
 anchor_right = 1.0
-margin_right = -758.0
-margin_bottom = 295.0
+margin_bottom = 330.0
 theme = ExtResource( 3 )
 custom_styles/panel = ExtResource( 4 )
 script = ExtResource( 6 )
@@ -18,26 +17,38 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Container" type="VBoxContainer" parent="."]
-margin_left = 5.0
-margin_top = 5.0
-margin_right = 261.0
-margin_bottom = 319.0
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_left = 4.0
+margin_top = 4.0
+margin_right = 296.0
+margin_bottom = 326.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 3
+custom_constants/margin_top = 0
+custom_constants/margin_left = 3
+custom_constants/margin_bottom = 0
 
-[node name="Sources" parent="Container" instance=ExtResource( 2 )]
+[node name="Container" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 3.0
+margin_right = 289.0
+margin_bottom = 322.0
+size_flags_horizontal = 3
+custom_constants/separation = 8
+
+[node name="Sources" parent="MarginContainer/Container" instance=ExtResource( 2 )]
 anchor_right = 0.0
-margin_right = 256.0
+margin_right = 286.0
 
-[node name="Preview" parent="Container" instance=ExtResource( 1 )]
+[node name="Preview" parent="MarginContainer/Container" instance=ExtResource( 1 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_top = 29.0
-margin_right = 256.0
-margin_bottom = 285.0
+margin_top = 33.0
+margin_right = 286.0
+margin_bottom = 289.0
 
-[node name="Interpolation" parent="Container" instance=ExtResource( 5 )]
+[node name="Interpolation" parent="MarginContainer/Container" instance=ExtResource( 5 )]
 anchor_right = 0.0
-margin_top = 289.0
-margin_right = 256.0
-margin_bottom = 314.0
+margin_top = 297.0
+margin_right = 286.0
+margin_bottom = 322.0

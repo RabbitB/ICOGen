@@ -14,6 +14,9 @@ onready var _remove_file: TextureButton = $RemoveFile as TextureButton
 
 func _ready() -> void:
 # warning-ignore:return_value_discarded
+	ICOGen.connect("active_data_changed", self, "_on_ICOGen_active_data_changed")
+
+# warning-ignore:return_value_discarded
 	ICOGen.get_signal_relay().connect_relay(
 			"source_changed",
 			ICOGen.get_active_data(),
@@ -46,8 +49,8 @@ func _update_options() -> void:
 		_options.set_item_id(0, ICOGenData.ImageSize.NONE)
 
 		for size in ICOGenData.ImageSize.values():
-			if size & active_data.active_image_sizes && active_data.image_is_source(size):
-				_options.add_item(ICOGenData.get_dimensions_string(size))
+			if active_data.image_is_source(size):
+				_options.add_item("x%d" % ICOGenData.get_dimensions(size))
 				_options.set_item_id(_options.get_item_count() - 1, size)
 		_options.disabled = false
 
@@ -80,7 +83,7 @@ func _on_Options_item_selected(index: int) -> void:
 
 	var selected_size: int = _options.get_item_id(index)
 	if selected_size == ICOGenData.ImageSize.NONE:
-		active_data.remove_source_override(selected_size)
+		active_data.remove_source_override(image_size)
 	else:
 		active_data.set_source_override(image_size, selected_size)
 
@@ -108,8 +111,12 @@ func _on_FileDialog_file_selected(path: String) -> void:
 	_update_file_buttons()
 
 
-func _on_source_changed(for_size: int, _source: Object) -> void:
-	if image_size == for_size:
-		_update_options()
-		_update_file_buttons()
+func _on_ICOGen_active_data_changed() -> void:
+	_update_options()
+	_update_file_buttons()
+
+
+func _on_source_changed(_for_size: int, _source: Object) -> void:
+	_update_options()
+	_update_file_buttons()
 

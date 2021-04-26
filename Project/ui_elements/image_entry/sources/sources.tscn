@@ -29,7 +29,7 @@ uppercase = true
 
 [node name="Options" type="OptionButton" parent="."]
 margin_left = 62.0
-margin_right = 242.0
+margin_right = 281.0
 margin_bottom = 25.0
 size_flags_horizontal = 3
 text = "BEST MATCH"
@@ -38,8 +38,8 @@ items = [ "BEST MATCH", null, false, 0, null ]
 selected = 0
 
 [node name="SelectFile" type="TextureButton" parent="."]
-margin_left = 246.0
-margin_right = 271.0
+margin_left = 285.0
+margin_right = 310.0
 margin_bottom = 25.0
 rect_min_size = Vector2( 25, 25 )
 hint_tooltip = "SELECT AN IMAGE"
@@ -86,6 +86,7 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="item_selected" from="Options" to="." method="_on_Options_item_selected"]
 [connection signal="pressed" from="SelectFile" to="." method="_on_SelectFile_pressed"]
 [connection signal="pressed" from="RemoveFile" to="." method="_on_RemoveFile_pressed"]

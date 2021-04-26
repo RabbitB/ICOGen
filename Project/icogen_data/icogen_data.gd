@@ -5,7 +5,6 @@ extends Resource
 signal interpolation_mode_changed(for_size)
 signal source_changed(for_size)
 signal source_override_changed(for_size)
-signal image_refreshed(for_size)
 
 enum ImageSize {
 	NONE = 0
@@ -32,6 +31,8 @@ enum InterpolationMode {
 	LANCZOS = 4,
 }
 
+const DEFAULT_INTERPOLATION_MODE: int = InterpolationMode.NEAREST
+
 const N_ARY_TIMES_OPERATOR: String = char(10761)	# U+2A09
 
 const SUPPORTED_EXTENSIONS: Dictionary = {
@@ -43,30 +44,23 @@ const SUPPORTED_EXTENSIONS: Dictionary = {
 	"webp": "load_webp_from_buffer",
 }
 
-export (int, FLAGS, \
-	"x8",
-	"x10",
-	"x14",
-	"x16",
-	"x22",
-	"x24",
-	"x32",
-	"x40",
-	"x48",
-	"x64",
-	"x96",
-	"x128",
-	"x256") var active_image_sizes: int setget _set_active_image_sizes
-
-var _images: Dictionary
+var _source_images: Dictionary
+var _source_image_paths: Dictionary
+var _source_map: Dictionary
+var _source_overrides: Dictionary
+var _interpolation_modes: Dictionary
 
 
 func _init() -> void:
-	active_image_sizes = 0
+	_source_images = Dictionary()
+	_source_image_paths = Dictionary()
+	_source_map = Dictionary()
+	_source_overrides = Dictionary()
+	_interpolation_modes = Dictionary()
 
-	_images = Dictionary()
 	for size in ImageSize.values():
-		_images[size] = Dictionary()
+		_source_map[size] = ImageSize.NONE
+		_interpolation_modes[size] = DEFAULT_INTERPOLATION_MODE
 
 
 func add_source_image(path: String, size_flag: int) -> int:
@@ -75,11 +69,9 @@ func add_source_image(path: String, size_flag: int) -> int:
 	if err:
 		return err
 
-	_images[size_flag].source_image = source_image
-	_images[size_flag].source_path = path
-
+	_source_images[size_flag] = source_image
+	_source_image_paths[size_flag] = path
 	_update_source_size_map()
-	_refresh_all_images()
 
 	emit_signal("source_changed", size_flag)
 
@@ -87,67 +79,100 @@ func add_source_image(path: String, size_flag: int) -> int:
 
 
 func remove_source_image(size_flag: int) -> void:
-	if !_images[size_flag].has("source_image"):
+	if !_source_images.has(size_flag):
 		Log.warning("No source image for image size %d was loaded. Cannot remove.",
 				[get_dimensions(size_flag)])
 		return
 
-	_images[size_flag].erase("source_image")
-	_images[size_flag].erase("source_path")
-
+# warning-ignore:return_value_discarded
+	_source_images.erase(size_flag)
+# warning-ignore:return_value_discarded
+	_source_image_paths.erase(size_flag)
 	_update_source_size_map()
-	_refresh_all_images()
+
+	var overrides: Array = _source_overrides.keys()
+	for override in overrides:
+		var override_size: int = _source_overrides[override]
+		if override_size == size_flag:
+			remove_source_override(override_size)
 
 	emit_signal("source_changed", size_flag)
 
 
-func get_image(size_flag: int) -> Image:
-	if !_images[size_flag].has("derived_image"):
-		Log.error("There is no image of size %d generated.",
-				[get_dimensions(size_flag)])
+func reset_image(size_flag: int) -> void:
+	if image_is_source(size_flag):
+		remove_source_image(size_flag)
 
-	return _images[size_flag].get("derived_image", Image.new())
+	if has_source_override(size_flag):
+		remove_source_override(size_flag)
+
+	set_interpolation_mode(size_flag, DEFAULT_INTERPOLATION_MODE)
+
+
+func has_no_sources() -> bool:
+	return _source_images.empty()
+
+
+func get_image(size_flag: int) -> Image:
+	var derived_image: Image = Image.new()
+	var derived_image_size: int = get_dimensions(size_flag)
+
+	if has_no_sources():
+		return derived_image
+
+	var source_size: int = get_source_size(size_flag)
+	if source_size == ImageSize.NONE:
+		Log.warning("There is no valid source image for image of size %d. Cannot generate a derived image.",
+				[get_dimensions(size_flag)])
+		return derived_image
+
+	derived_image.copy_from(_source_images[source_size])
+	derived_image.resize(
+			derived_image_size,
+			derived_image_size,
+			get_interpolation_mode(size_flag))
+
+	return derived_image
 
 
 func get_image_path(size_flag: int) -> String:
-	var source_size: int = _images[size_flag].source
-	return _images[source_size].source_path
+	return _source_image_paths.get(_source_map[size_flag], "")
+
+
+func get_source_size(size_flag: int) -> int:
+	if has_source_override(size_flag):
+		return get_source_override(size_flag)
+
+	return _source_map[size_flag]
 
 
 func image_is_source(size_flag: int) -> bool:
-	return _images[size_flag].has("source_image")
+	return _source_images.has(size_flag)
 
 
 func set_interpolation_mode(size_flag: int, mode: int) -> void:
-	if \
-			!_images[size_flag].has("interpolation_mode") || \
-			_images[size_flag].interpolation_mode != mode:
-		_images[size_flag].interpolation_mode = mode
-		_refresh_image(size_flag)
-
-		emit_signal("interpolation_mode_changed", size_flag)
+	_interpolation_modes[size_flag] = mode
+	emit_signal("interpolation_mode_changed", size_flag)
 
 
 func get_interpolation_mode(size_flag: int) -> int:
-	return _images[size_flag].get("interpolation_mode", Image.INTERPOLATE_NEAREST)
+	return _interpolation_modes[size_flag]
 
 
 func set_source_override(for_size_flag: int, source_size_flag: int) -> void:
-	if !_images[source_size_flag].has("source_image"):
+	if !_source_images.has(source_size_flag):
 		Log.error("No source defined for image of size %d",
 				[get_dimensions(source_size_flag)])
 		return
 
-	_images[for_size_flag].source_override = source_size_flag
-	_refresh_image(for_size_flag)
-
+	_source_overrides[for_size_flag] = source_size_flag
 	emit_signal("source_override_changed", for_size_flag)
 
 
 func remove_source_override(size_flag: int) -> void:
-	if _images[size_flag].erase("source_override"):
-		_refresh_image(size_flag)
-		emit_signal("source_override_changed", size_flag)
+# warning-ignore:return_value_discarded
+	_source_overrides.erase(size_flag)
+	emit_signal("source_override_changed", size_flag)
 
 
 func get_source_override(size_flag: int) -> int:
@@ -155,11 +180,11 @@ func get_source_override(size_flag: int) -> int:
 		Log.error("There is no source override for image of size %d",
 				[get_dimensions(size_flag)])
 
-	return _images[size_flag].get("source_override", ImageSize.NONE)
+	return _source_overrides.get(size_flag, ImageSize.NONE)
 
 
 func has_source_override(size_flag: int) -> bool:
-	return _images[size_flag].has("source_override")
+	return _source_overrides.has(size_flag)
 
 
 static func get_dimensions(size_flag: int) -> int:
@@ -184,56 +209,30 @@ static func get_dimensions_string(size_flag: int) -> String:
 	return "%s%d" % [N_ARY_TIMES_OPERATOR, get_dimensions(size_flag)]
 
 
-func _refresh_image(size_flag: int) -> void:
-	var derived_image_size: int = get_dimensions(size_flag)
-	var derived_image: Image = Image.new()
+func _update_source_size_map() -> void:
+	for size in _source_map:
+		_source_map[size] = ImageSize.NONE
 
-	var source_size: int = _images[size_flag].get("source", ImageSize.NONE) if \
-			!has_source_override(size_flag) else \
-			_images[size_flag].source_override
-
-	if source_size == ImageSize.NONE:
-		Log.warning("There is no valid source image for image of size %d. Cannot generate a derived image.",
-				[get_dimensions(size_flag)])
+	if has_no_sources():
 		return
 
-	derived_image.copy_from(_images[source_size].source_image)
-	derived_image.resize(
-			derived_image_size,
-			derived_image_size,
-			get_interpolation_mode(size_flag))
-	_images[size_flag].derived_image = derived_image
-
-	emit_signal("image_refreshed", size_flag)
-
-
-func _refresh_all_images() -> void:
-	for size in ImageSize.values():
-		_images[size].erase("derived_image")
-
-		if size & active_image_sizes:
-			_refresh_image(size)
-
-
-func _update_source_size_map() -> void:
 	#	Find the size of the next larger source.
 	var closest_matching_source_size: int = ImageSize.NONE
 	var inverted_size_array: Array = ImageSize.values()
 	inverted_size_array.invert()
 
 	for size in inverted_size_array:
-		if _images[size].has("source_image"):
+		if _source_images.has(size):
 			closest_matching_source_size = size
 
-		_images[size].source = closest_matching_source_size
+		_source_map[size] = closest_matching_source_size
 
-	#	Find the size of the next smaller source, for sizes that don't have a next larger source.
 	for size in ImageSize.values():
-		if _images[size].has("source_image"):
+		if _source_images.has(size):
 			closest_matching_source_size = size
 
-		if _images[size].source == ImageSize.NONE:
-			_images[size].source = closest_matching_source_size
+		if _source_map[size] == ImageSize.NONE:
+			_source_map[size] = closest_matching_source_size
 
 
 func _load_image_file(path: String, into_image: Image) -> int:
@@ -256,23 +255,4 @@ func _load_image_file(path: String, into_image: Image) -> int:
 		return err
 
 	return OK
-
-
-func _set_active_image_sizes(new_sizes: int) -> void:
-	var changed_sizes: int = active_image_sizes ^ new_sizes
-	var added_sizes: int = changed_sizes & new_sizes
-	var removed_sizes: int = changed_sizes & active_image_sizes
-
-	active_image_sizes = new_sizes
-
-	for size in ImageSize.values():
-		if size & removed_sizes:
-			var image_is_source: bool = image_is_source(size)
-			_images[size] = Dictionary()
-
-			if image_is_source:
-				_refresh_all_images()
-				break
-		elif size & added_sizes:
-			_refresh_image(size)
 

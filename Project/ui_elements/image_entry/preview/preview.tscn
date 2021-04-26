@@ -12,9 +12,9 @@ __meta__ = {
 }
 
 [node name="Viewer" type="TextureRect" parent="."]
-margin_left = 7.0
+margin_left = 22.0
 margin_top = 172.0
-margin_right = 263.0
+margin_right = 278.0
 margin_bottom = 428.0
 rect_min_size = Vector2( 256, 256 )
 size_flags_horizontal = 0
