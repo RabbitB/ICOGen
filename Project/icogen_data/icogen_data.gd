@@ -187,6 +187,15 @@ func has_source_override(size_flag: int) -> bool:
 	return _source_overrides.has(size_flag)
 
 
+func get_serialized_data() -> Dictionary:
+	var serialized_data: Dictionary = Dictionary()
+	serialized_data.source_image_paths = _source_image_paths
+	serialized_data.source_overrides = _source_overrides
+	serialized_data.interpolation_modes = _interpolation_modes
+
+	return serialized_data
+
+
 static func get_dimensions(size_flag: int) -> int:
 	match size_flag:
 		ImageSize.x8: return 8

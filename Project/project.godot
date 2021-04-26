@@ -30,6 +30,11 @@ _global_script_classes=[ {
 "path": "res://icogen_data/icogen_data.gd"
 }, {
 "base": "Reference",
+"class": "ICOGenDataFile",
+"language": "GDScript",
+"path": "res://icogen_data/icogen_data_file.gd"
+}, {
+"base": "Reference",
 "class": "Log",
 "language": "GDScript",
 "path": "res://addons/krakatoa/globals/log.gd"
@@ -49,6 +54,7 @@ _global_script_class_icons={
 "FixedFlexGridContainer": "res://addons/krakatoa/nodes/control/iconography/fixed_flex_grid_container_icon.png",
 "FullWindowFileDialog": "res://addons/krakatoa/nodes/control/iconography/full_window_file_dialog.png",
 "ICOGenData": "",
+"ICOGenDataFile": "",
 "Log": "",
 "PersistentFileDialog": "res://addons/krakatoa/nodes/control/iconography/persistent_file_dialog.png",
 "SignalRelay": "res://addons/krakatoa/nodes/signal_relay/iconography/signal_relay_icon.png"
