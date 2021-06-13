@@ -23,10 +23,9 @@ func load_persistent_data() -> void:
 			OS.get_executable_path())
 
 
-func save_persistent_data() -> void:
+func save_persistent_data(working_path: String) -> void:
 	var config: ConfigFile = _get_loaded_config_file()
-
-	config.set_value(config_identifier, LAST_USED_PATH, current_dir)
+	config.set_value(config_identifier, LAST_USED_PATH, working_path)
 
 	var err: int = config.save(config_file_path)
 	if err:
@@ -54,13 +53,18 @@ func _on_about_to_show_persistent() -> void:
 
 
 func _on_dir_selected_persistent(dir: String) -> void:
-	save_persistent_data()
+	# Sometimes selecting a file triggers this signal even though it shouldn't.
+	# So we account for that scenario.
+	if dir.get_extension():
+		save_persistent_data(dir.get_base_dir())
+	else:
+		save_persistent_data(dir)
 
 
 func _on_file_selected_persistent(file: String) -> void:
-	save_persistent_data()
+	save_persistent_data(file.get_base_dir())
 
 
 func _on_files_selected_persistent(paths: PoolStringArray) -> void:
-	save_persistent_data()
+	save_persistent_data(paths[0].get_base_dir())
 
