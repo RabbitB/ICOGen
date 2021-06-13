@@ -23,6 +23,13 @@ func _ready() -> void:
 			self,
 			"_on_source_changed")
 
+# warning-ignore:return_value_discarded
+	ICOGen.get_signal_relay().connect_relay(
+			"source_override_changed",
+			ICOGen.get_active_data(),
+			self,
+			"_on_source_override_changed")
+
 
 func _update_options() -> void:
 	var active_data: ICOGenData = ICOGen.get_active_data()
@@ -119,4 +126,9 @@ func _on_ICOGen_active_data_changed() -> void:
 func _on_source_changed(_for_size: int, _source: Object) -> void:
 	_update_options()
 	_update_file_buttons()
+
+
+func _on_source_override_changed(for_size: int, _source: Object) -> void:
+	var options_idx: int = _options.get_item_index(for_size)
+	_options.select(options_idx)
 

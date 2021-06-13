@@ -17,6 +17,14 @@ func _ready():
 	_select_default_items()
 
 
+func set_checked(id: int, checked: bool) -> void:
+	var idx: int = _menu.get_item_index(id)
+
+	if _menu.is_item_checkable(idx):
+		_menu.set_item_checked(idx, checked)
+		emit_signal("image_sizes_changed", id, checked)
+
+
 func get_checked() -> Array:
 	var checked_sizes: Array = []
 	for idx in _menu.get_item_count():
@@ -24,6 +32,13 @@ func get_checked() -> Array:
 			checked_sizes.append(_menu.get_item_id(idx))
 
 	return checked_sizes
+
+
+func uncheck_all() -> void:
+	for idx in _menu.get_item_count():
+		if _menu.is_item_checked(idx) && _menu.is_item_checkable(idx):
+			_menu.set_item_checked(idx, false)
+			emit_signal("image_sizes_changed", _menu.get_item_id(idx), false)
 
 
 func _setup_menu_btn() -> void:
