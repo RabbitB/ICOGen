@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://ui_elements/main/main_ui.gd" type="Script" id=1]
 [ext_resource path="res://ui_elements/size_selector/size_selector.tscn" type="PackedScene" id=2]
 [ext_resource path="res://theme/wave.theme" type="Theme" id=3]
-[ext_resource path="res://theme/bordered_panel.tres" type="StyleBox" id=4]
+[ext_resource path="res://ui_elements/io_buttons/import_export_icogen.tscn" type="PackedScene" id=4]
+[ext_resource path="res://ui_elements/io_buttons/generate_ico.tscn" type="PackedScene" id=5]
+[ext_resource path="res://theme/seperator.stylebox" type="StyleBox" id=6]
 
 [node name="MainUI" type="MarginContainer"]
 anchor_right = 1.0
@@ -20,75 +22,68 @@ __meta__ = {
 [node name="MainUIContainer" type="VBoxContainer" parent="."]
 margin_left = 6.0
 margin_top = 6.0
-margin_right = 304.0
-margin_bottom = 594.0
+margin_right = 344.0
+margin_bottom = 786.0
 theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Sizes" type="PanelContainer" parent="MainUIContainer"]
-margin_right = 298.0
+margin_right = 338.0
 margin_bottom = 33.0
-custom_styles/panel = ExtResource( 4 )
 
 [node name="SizeSelector" parent="MainUIContainer/Sizes" instance=ExtResource( 2 )]
-margin_left = 4.0
+margin_left = 6.0
 margin_top = 4.0
-margin_right = 294.0
+margin_right = 332.0
 margin_bottom = 29.0
 
-[node name="Entries" type="PanelContainer" parent="MainUIContainer"]
+[node name="TopSeperator" type="HSeparator" parent="MainUIContainer"]
 margin_top = 37.0
-margin_right = 298.0
-margin_bottom = 530.0
+margin_right = 338.0
+margin_bottom = 41.0
+custom_styles/separator = ExtResource( 6 )
+
+[node name="Entries" type="PanelContainer" parent="MainUIContainer"]
+margin_top = 45.0
+margin_right = 338.0
+margin_bottom = 714.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="EntryGridScroll" type="ScrollContainer" parent="MainUIContainer/Entries"]
 margin_left = 6.0
 margin_top = 4.0
-margin_right = 292.0
-margin_bottom = 489.0
+margin_right = 332.0
+margin_bottom = 665.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 follow_focus = true
 scroll_horizontal_enabled = false
 
 [node name="ImageEntryList" type="VBoxContainer" parent="MainUIContainer/Entries/EntryGridScroll"]
-margin_right = 286.0
-margin_bottom = 485.0
+margin_right = 326.0
+margin_bottom = 661.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ICOGenButtons" type="HBoxContainer" parent="MainUIContainer"]
-margin_top = 534.0
-margin_right = 298.0
-margin_bottom = 559.0
+[node name="BottomSeperator" type="HSeparator" parent="MainUIContainer"]
+margin_top = 718.0
+margin_right = 338.0
+margin_bottom = 722.0
+custom_styles/separator = ExtResource( 6 )
 
-[node name="ImportICOGen" type="Button" parent="MainUIContainer/ICOGenButtons"]
-margin_right = 147.0
-margin_bottom = 25.0
-size_flags_horizontal = 3
-text = "IMPORT ICOGEN"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="ICOGenButtons" parent="MainUIContainer" instance=ExtResource( 4 )]
+margin_top = 726.0
+margin_right = 338.0
+margin_bottom = 751.0
 
-[node name="ExportICOGen" type="Button" parent="MainUIContainer/ICOGenButtons"]
-margin_left = 151.0
-margin_right = 298.0
-margin_bottom = 25.0
-size_flags_horizontal = 3
-text = "EXPORT ICOGEN"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="GenerateICO" type="Button" parent="MainUIContainer"]
-margin_top = 563.0
-margin_right = 298.0
-margin_bottom = 588.0
-text = "GENERATE ICO FILE"
+[node name="GenerateICO" parent="MainUIContainer" instance=ExtResource( 5 )]
+margin_top = 755.0
+margin_right = 338.0
+margin_bottom = 780.0
 
 [connection signal="image_sizes_changed" from="MainUIContainer/Sizes/SizeSelector" to="." method="_on_SizeSelector_image_sizes_changed"]
+[connection signal="should_export_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_export_icogen_file"]
+[connection signal="should_import_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_import_icogen_file"]

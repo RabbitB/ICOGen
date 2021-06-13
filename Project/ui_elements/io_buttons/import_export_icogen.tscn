@@ -1,0 +1,63 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://ui_elements/io_buttons/import_export_icogen.gd" type="Script" id=1]
+[ext_resource path="res://addons/krakatoa/nodes/control/full_window_file_dialog.gd" type="Script" id=2]
+
+[node name="ICOGenButtons" type="HBoxContainer"]
+margin_right = 238.0
+margin_bottom = 20.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ImportICOGen" type="Button" parent="."]
+margin_right = 118.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "IMPORT ICOGEN"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ExportICOGen" type="Button" parent="."]
+margin_left = 122.0
+margin_right = 238.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "EXPORT ICOGEN"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ImportFileDialog" type="FileDialog" parent="."]
+margin_right = 315.0
+margin_bottom = 130.0
+popup_exclusive = true
+window_title = "Import ICOGen File"
+mode_overrides_title = false
+mode = 0
+access = 2
+filters = PoolStringArray( "*.icogen ; ICOGen" )
+current_dir = "/Projects/Godot/Utilities/ICOGen/Project"
+current_path = "/Projects/Godot/Utilities/ICOGen/Project/"
+script = ExtResource( 2 )
+config_identifier = "icogen_file_dlg"
+
+[node name="ExportFileDialog" type="FileDialog" parent="."]
+margin_right = 315.0
+margin_bottom = 130.0
+popup_exclusive = true
+window_title = "Export ICOGen File"
+mode_overrides_title = false
+access = 2
+filters = PoolStringArray( "*.icogen ; ICOGen" )
+current_dir = "/Projects/Godot/Utilities/ICOGen/Project"
+current_path = "/Projects/Godot/Utilities/ICOGen/Project/"
+script = ExtResource( 2 )
+config_identifier = "icogen_file_dlg"
+
+[connection signal="pressed" from="ImportICOGen" to="." method="_on_ImportICOGen_pressed"]
+[connection signal="pressed" from="ExportICOGen" to="." method="_on_ExportICOGen_pressed"]
+[connection signal="file_selected" from="ImportFileDialog" to="." method="_on_ImportFileDialog_file_selected"]
+[connection signal="file_selected" from="ExportFileDialog" to="." method="_on_ExportFileDialog_file_selected"]

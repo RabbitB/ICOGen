@@ -2,12 +2,13 @@ extends Control
 
 
 const SizeSelector: Script = preload("res://ui_elements/size_selector/size_selector.gd")
+const ICOGenButtons: Script = preload("res://ui_elements/io_buttons/import_export_icogen.gd")
 const ImageEntry: Script = preload("res://ui_elements/image_entry/image_entry.gd")
 const ImageEntryScene: PackedScene = preload("res://ui_elements/image_entry/image_entry.tscn")
 
 var _image_entries: Dictionary
 
-onready var _size_selector: SizeSelector = $MainUIContainer/Sizes/SizeSelector
+onready var _size_selector: SizeSelector = $MainUIContainer/Sizes/SizeSelector as SizeSelector
 onready var _image_entry_list: Control = $MainUIContainer/Entries/EntryGridScroll/ImageEntryList
 onready var _is_ready: bool = true
 
@@ -18,6 +19,38 @@ func _init() -> void:
 
 func _ready():
 	sync_image_entries()
+
+
+func save_ico_file(path: String) -> void:
+	pass
+
+
+func load_icogen_file(path: String) -> void:
+	var icogen_file: ICOGenDataFile = ICOGenDataFile.new()
+
+	var err: int = icogen_file.load(path)
+	if err:
+		Log.error(
+				"Could not load ICOGen file. Encountered error %s",
+				[Log.get_error_description(err)])
+		return
+
+	_size_selector.uncheck_all()
+	ICOGen.set_active_data(icogen_file.icogen_data)
+
+	for size in icogen_file.selected_image_sizes:
+		_size_selector.set_checked(size, true)
+
+
+func save_icogen_file(path: String) -> void:
+	var err: int = ICOGenDataFile.save(
+			path,
+			_size_selector.get_checked(),
+			ICOGen.get_active_data())
+	if err:
+		Log.error(
+				"Could not save the ICOGen file to %s. Encountered error %s",
+				[path, Log.get_error_description(err)])
 
 
 func sync_image_entries() -> void:
@@ -65,7 +98,15 @@ func sort_image_entries() -> void:
 		idx += 1
 
 
-func _on_SizeSelector_image_sizes_changed(size, is_checked) -> void:
+func _on_export_icogen_file(path: String) -> void:
+	save_icogen_file(path)
+
+
+func _on_import_icogen_file(path: String) -> void:
+	load_icogen_file(path)
+
+
+func _on_SizeSelector_image_sizes_changed(size: int, is_checked: bool) -> void:
 	if !_is_ready:
 		return
 
