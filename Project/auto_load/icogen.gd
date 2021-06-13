@@ -5,7 +5,7 @@ extends Node
 signal active_data_changed()
 
 const INT_MAX: int = 2^63 - 1
-const MIN_WINDOW_SIZE: Vector2 = Vector2(310, 0)
+const MIN_WINDOW_SIZE: Vector2 = Vector2(350, 420)
 
 var _active_data: ICOGenData
 var _signal_relay: SignalRelay
