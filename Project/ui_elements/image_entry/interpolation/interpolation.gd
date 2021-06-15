@@ -11,11 +11,7 @@ onready var _is_ready: bool = true
 
 func _ready() -> void:
 # warning-ignore:return_value_discarded
-	ICOGen.get_signal_relay().connect_relay(
-			"interpolation_mode_changed",
-			ICOGen.get_active_data(),
-			self,
-			"_on_interpolation_mode_changed")
+	ICOGen.connect("active_data_changed", self, "_on_active_data_changed")
 
 	_update_size_indicator()
 	_update_options()
@@ -35,14 +31,13 @@ func _update_size_indicator() -> void:
 
 func _update_options() -> void:
 	if _is_ready:
-		_options.select(ICOGen.get_active_data().get_interpolation_mode(image_size))
+		_options.select(ICOGen.active_data.get_interpolation_mode(image_size))
 
 
 func _on_Options_item_selected(index: int) -> void:
-	ICOGen.get_active_data().set_interpolation_mode(image_size, index)
+	ICOGen.active_data.set_interpolation_mode(image_size, index)
 
 
-func _on_interpolation_mode_changed(for_size: int, _sender: Object) -> void:
-	if for_size == image_size:
-		_options.select(ICOGen.get_active_data().get_interpolation_mode(for_size))
+func _on_active_data_changed() -> void:
+	_options.select(ICOGen.active_data.get_interpolation_mode(image_size))
 

@@ -20,7 +20,7 @@ __meta__ = {
 [node name="MarginContainer" type="MarginContainer" parent="."]
 margin_left = 4.0
 margin_top = 4.0
-margin_right = 296.0
+margin_right = 346.0
 margin_bottom = 326.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -31,24 +31,24 @@ custom_constants/margin_bottom = 0
 
 [node name="Container" type="VBoxContainer" parent="MarginContainer"]
 margin_left = 3.0
-margin_right = 289.0
+margin_right = 339.0
 margin_bottom = 322.0
 size_flags_horizontal = 3
 custom_constants/separation = 8
 
 [node name="Sources" parent="MarginContainer/Container" instance=ExtResource( 2 )]
 anchor_right = 0.0
-margin_right = 286.0
+margin_right = 336.0
 
 [node name="Preview" parent="MarginContainer/Container" instance=ExtResource( 1 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_top = 33.0
-margin_right = 286.0
-margin_bottom = 289.0
+margin_right = 336.0
+margin_bottom = 49.0
 
 [node name="Interpolation" parent="MarginContainer/Container" instance=ExtResource( 5 )]
 anchor_right = 0.0
-margin_top = 297.0
-margin_right = 286.0
-margin_bottom = 322.0
+margin_top = 57.0
+margin_right = 336.0
+margin_bottom = 82.0

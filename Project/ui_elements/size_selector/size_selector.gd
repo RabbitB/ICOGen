@@ -1,7 +1,7 @@
 extends MenuButton
 
 
-signal image_sizes_changed(size, is_checked)
+signal sizes_changed(size, is_checked)
 
 export(ICOGenData.ImageSize, FLAGS) var default_sizes
 
@@ -9,10 +9,6 @@ onready var _menu: PopupMenu = get_popup()
 
 
 func _ready():
-# warning-ignore:return_value_discarded
-	ScriptClassDB.add_class("SizeSelector", get_script())
-	ICOGen.get_signal_relay().add_relay("image_sizes_changed", self)
-
 	_setup_menu_btn()
 	_select_default_items()
 
@@ -22,7 +18,7 @@ func set_checked(id: int, checked: bool) -> void:
 
 	if _menu.is_item_checkable(idx):
 		_menu.set_item_checked(idx, checked)
-		emit_signal("image_sizes_changed", id, checked)
+		emit_signal("sizes_changed", id, checked)
 
 
 func get_checked() -> Array:
@@ -38,7 +34,7 @@ func uncheck_all() -> void:
 	for idx in _menu.get_item_count():
 		if _menu.is_item_checked(idx) && _menu.is_item_checkable(idx):
 			_menu.set_item_checked(idx, false)
-			emit_signal("image_sizes_changed", _menu.get_item_id(idx), false)
+			emit_signal("sizes_changed", _menu.get_item_id(idx), false)
 
 
 func _setup_menu_btn() -> void:
@@ -67,16 +63,13 @@ func _setup_menu_btn() -> void:
 
 
 func _select_default_items() -> void:
-	var _corrected_defaults: int
 	for size in ICOGenData.ImageSize.values():
 		# The export FLAGS command doesn't actually match the original flag enum,
 		# but instead starts from 1. This requires us to double the size value.
 		if default_sizes & (size * 2):
 			var item_idx: int = _menu.get_item_index(size)
 			_menu.set_item_checked(item_idx, true)
-
-			_corrected_defaults = _corrected_defaults | size
-			emit_signal("image_sizes_changed", size, true)
+			emit_signal("sizes_changed", size, true)
 
 
 func _on_menu_index_pressed(idx: int) -> void:
@@ -84,5 +77,5 @@ func _on_menu_index_pressed(idx: int) -> void:
 		var is_checked: bool = _menu.is_item_checked(idx)
 		_menu.set_item_checked(idx, !is_checked)
 
-		emit_signal("image_sizes_changed", _menu.get_item_id(idx), !is_checked)
+		emit_signal("sizes_changed", _menu.get_item_id(idx), !is_checked)
 

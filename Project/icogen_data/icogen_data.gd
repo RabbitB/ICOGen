@@ -2,10 +2,6 @@ class_name ICOGenData
 extends Resource
 
 
-signal interpolation_mode_changed(for_size)
-signal source_changed(for_size)
-signal source_override_changed(for_size)
-
 enum ImageSize {
 	NONE = 0
 	x8 = 1,
@@ -45,7 +41,6 @@ const SUPPORTED_EXTENSIONS: Dictionary = {
 }
 
 var _source_images: Dictionary
-var _source_image_paths: Dictionary
 var _source_map: Dictionary
 var _source_overrides: Dictionary
 var _interpolation_modes: Dictionary
@@ -53,7 +48,6 @@ var _interpolation_modes: Dictionary
 
 func _init() -> void:
 	_source_images = Dictionary()
-	_source_image_paths = Dictionary()
 	_source_map = Dictionary()
 	_source_overrides = Dictionary()
 	_interpolation_modes = Dictionary()
@@ -69,44 +63,37 @@ func add_source_image(path: String, size_flag: int) -> int:
 	if err:
 		return err
 
+	source_image.resource_path = path
 	_source_images[size_flag] = source_image
-	_source_image_paths[size_flag] = path
 	_update_source_size_map()
 
-	emit_signal("source_changed", size_flag)
+	emit_changed()
 
 	return OK
 
 
 func remove_source_image(size_flag: int) -> void:
 	if !_source_images.has(size_flag):
-		Log.warning("No source image for image size %d was loaded. Cannot remove.",
-				[get_dimensions(size_flag)])
 		return
 
 # warning-ignore:return_value_discarded
 	_source_images.erase(size_flag)
-# warning-ignore:return_value_discarded
-	_source_image_paths.erase(size_flag)
 	_update_source_size_map()
 
-	var overrides: Array = _source_overrides.keys()
-	for override in overrides:
-		var override_size: int = _source_overrides[override]
-		if override_size == size_flag:
-			remove_source_override(override_size)
+	for override in _source_overrides:
+		var override_with: int = _source_overrides[override]
+		if override_with == size_flag:
+			set_source_override(override, ImageSize.NONE)
 
-	emit_signal("source_changed", size_flag)
+	emit_changed()
 
 
 func reset_image(size_flag: int) -> void:
-	if image_is_source(size_flag):
-		remove_source_image(size_flag)
-
-	if has_source_override(size_flag):
-		remove_source_override(size_flag)
-
+	remove_source_image(size_flag)
+	set_source_override(size_flag, ImageSize.NONE)
 	set_interpolation_mode(size_flag, DEFAULT_INTERPOLATION_MODE)
+
+	emit_changed()
 
 
 func has_no_sources() -> bool:
@@ -136,7 +123,7 @@ func get_image(size_flag: int) -> Image:
 
 
 func get_image_path(size_flag: int) -> String:
-	return _source_image_paths.get(_source_map[size_flag], "")
+	return (_source_images.get(get_source_size(size_flag), Image.new()) as Image).resource_path
 
 
 func get_source_size(size_flag: int) -> int:
@@ -152,7 +139,7 @@ func image_is_source(size_flag: int) -> bool:
 
 func set_interpolation_mode(size_flag: int, mode: int) -> void:
 	_interpolation_modes[size_flag] = mode
-	emit_signal("interpolation_mode_changed", size_flag)
+	emit_changed()
 
 
 func get_interpolation_mode(size_flag: int) -> int:
@@ -160,36 +147,31 @@ func get_interpolation_mode(size_flag: int) -> int:
 
 
 func set_source_override(for_size_flag: int, source_size_flag: int) -> void:
-	if !_source_images.has(source_size_flag):
+	if source_size_flag != ImageSize.NONE && !_source_images.has(source_size_flag):
 		Log.error("No source defined for image of size %d",
 				[get_dimensions(source_size_flag)])
 		return
 
 	_source_overrides[for_size_flag] = source_size_flag
-	emit_signal("source_override_changed", for_size_flag)
-
-
-func remove_source_override(size_flag: int) -> void:
-# warning-ignore:return_value_discarded
-	_source_overrides.erase(size_flag)
-	emit_signal("source_override_changed", size_flag)
+	emit_changed()
 
 
 func get_source_override(size_flag: int) -> int:
-	if !has_source_override(size_flag):
-		Log.error("There is no source override for image of size %d",
-				[get_dimensions(size_flag)])
-
 	return _source_overrides.get(size_flag, ImageSize.NONE)
 
 
 func has_source_override(size_flag: int) -> bool:
-	return _source_overrides.has(size_flag)
+	return _source_overrides.get(size_flag, ImageSize.NONE) != ImageSize.NONE
 
 
 func get_serialized_data() -> Dictionary:
 	var serialized_data: Dictionary = Dictionary()
-	serialized_data.source_image_paths = _source_image_paths
+
+	var image_paths: Dictionary = {}
+	for size in _source_images:
+		image_paths[size] = _source_images[size].resource_path
+
+	serialized_data.source_image_paths = image_paths
 	serialized_data.source_overrides = _source_overrides
 	serialized_data.interpolation_modes = _interpolation_modes
 

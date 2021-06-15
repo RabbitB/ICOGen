@@ -84,6 +84,6 @@ margin_top = 755.0
 margin_right = 338.0
 margin_bottom = 780.0
 
-[connection signal="image_sizes_changed" from="MainUIContainer/Sizes/SizeSelector" to="." method="_on_SizeSelector_image_sizes_changed"]
+[connection signal="sizes_changed" from="MainUIContainer/Sizes/SizeSelector" to="." method="_on_SizeSelector_sizes_changed"]
 [connection signal="should_export_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_export_icogen_file"]
 [connection signal="should_import_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_import_icogen_file"]

@@ -21,7 +21,7 @@ uppercase = true
 
 [node name="Options" type="OptionButton" parent="."]
 margin_left = 109.0
-margin_right = 245.0
+margin_right = 324.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "NEAREST"
@@ -29,12 +29,13 @@ items = [ "NEAREST", null, false, 0, null, "BILINEAR", null, false, 1, null, "CU
 selected = 0
 
 [node name="SizeIndicator" type="Label" parent="."]
-margin_left = 249.0
+margin_left = 328.0
 margin_top = 1.0
-margin_right = 271.0
+margin_right = 350.0
 margin_bottom = 19.0
 custom_fonts/font = ExtResource( 1 )
 custom_colors/font_color = Color( 0.32549, 0.654902, 0.533333, 1 )
 text = " ⨉16"
 align = 2
+
 [connection signal="item_selected" from="Options" to="." method="_on_Options_item_selected"]
