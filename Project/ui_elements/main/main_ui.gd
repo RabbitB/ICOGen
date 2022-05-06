@@ -25,26 +25,18 @@ func save_ico_file(path: String) -> void:
 	pass
 
 
-func load_icogen_file(path: String) -> void:
-	var icogen_file: ICOGenDataFile = ICOGenDataFile.new()
-
-	var err: int = icogen_file.load(path)
-	if err:
-		Log.error(
-				"Could not load ICOGen file. Encountered error %s",
-				[Log.get_error_description(err)])
-		return
-
+func import_icogen_file(path: String) -> void:
 	_size_selector.uncheck_all()
-	ICOGen.active_data = icogen_file.icogen_data
 
-	for size in icogen_file.selected_image_sizes:
+	ICOGen.active_data = ResourceLoader.load(path, "", true)
+
+	var output_sizes: SetBitIterator = SetBitIterator.new(ICOGen.active_data.get_output_sizes())
+	for size in output_sizes:
 		_size_selector.set_checked(size, true)
 
 
-func save_icogen_file(path: String) -> void:
-	var err: int = ICOGenDataFile.save(
-			path, _size_selector.get_checked(), ICOGen.active_data)
+func export_icogen_file(path: String) -> void:
+	var err: int = ResourceSaver.save(path, ICOGen.active_data)
 	if err:
 		Log.error(
 				"Could not save the ICOGen file to %s. Encountered error %s",
@@ -52,11 +44,13 @@ func save_icogen_file(path: String) -> void:
 
 
 func sync_image_entries() -> void:
+	ICOGen.active_data.set_output_sizes(_size_selector.get_checked())
+
 	for entry in _image_entries:
 		remove_image_entry(entry)
 
-	var checked_sizes: Array = _size_selector.get_checked()
-	for size in checked_sizes:
+	var selected_sizes: SetBitIterator = SetBitIterator.new(ICOGen.active_data.get_output_sizes())
+	for size in selected_sizes:
 		add_image_entry(size)
 
 
@@ -67,7 +61,6 @@ func add_image_entry(for_size: int) -> void:
 	var new_entry: ImageEntry = ImageEntryScene.instance() as ImageEntry
 
 	_image_entry_list.add_child(new_entry, true)
-	new_entry.set_meta("image_size", for_size)
 	new_entry.image_size = for_size
 
 	_image_entries[for_size] = new_entry
@@ -97,11 +90,11 @@ func sort_image_entries() -> void:
 
 
 func _on_export_icogen_file(path: String) -> void:
-	save_icogen_file(path)
+	export_icogen_file(path)
 
 
 func _on_import_icogen_file(path: String) -> void:
-	load_icogen_file(path)
+	import_icogen_file(path)
 
 
 func _on_SizeSelector_sizes_changed(size: int, is_checked: bool) -> void:
@@ -112,4 +105,10 @@ func _on_SizeSelector_sizes_changed(size: int, is_checked: bool) -> void:
 		add_image_entry(size)
 	else:
 		remove_image_entry(size)
+
+	ICOGen.active_data.set_output_sizes(_size_selector.get_checked())
+
+
+func _on_GenerateICO_wants_to_save(path) -> void:
+	save_ico_file(path)
 

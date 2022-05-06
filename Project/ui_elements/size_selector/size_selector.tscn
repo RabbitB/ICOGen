@@ -7,8 +7,5 @@ margin_right = 93.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
 text = "SELECT IMAGE SIZES"
+items = [ "STANDARD", null, 0, false, false, 0, 0, null, "", true, "x16", null, 1, true, false, 8, 0, null, "", false, "x32", null, 1, true, false, 64, 0, null, "", false, "x48", null, 1, true, false, 256, 0, null, "", false, "x256", null, 1, true, false, 4096, 0, null, "", false, "EXTENDED", null, 0, false, false, 5, 0, null, "", true, "x24", null, 1, false, false, 32, 0, null, "", false, "x64", null, 1, false, false, 512, 0, null, "", false, "x96", null, 1, false, false, 1024, 0, null, "", false, "x128", null, 1, false, false, 2048, 0, null, "", false, "SPECIALIZED", null, 0, false, false, 10, 0, null, "", true, "x8", null, 1, false, false, 1, 0, null, "", false, "x10", null, 1, false, false, 2, 0, null, "", false, "x14", null, 1, false, false, 4, 0, null, "", false, "x22", null, 1, false, false, 16, 0, null, "", false, "x40", null, 1, false, false, 128, 0, null, "", false ]
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-default_sizes = 8848

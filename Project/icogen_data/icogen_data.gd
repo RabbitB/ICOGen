@@ -40,6 +40,7 @@ const SUPPORTED_EXTENSIONS: Dictionary = {
 	"webp": "load_webp_from_buffer",
 }
 
+var _output_sizes: int
 var _source_images: Dictionary
 var _source_map: Dictionary
 var _source_overrides: Dictionary
@@ -57,13 +58,29 @@ func _init() -> void:
 		_interpolation_modes[size] = DEFAULT_INTERPOLATION_MODE
 
 
+func set_output_sizes(output_sizes: int) -> void:
+	_output_sizes = output_sizes
+
+
+func get_output_sizes() -> int:
+	return _output_sizes
+
+
+func add_output_sizes(output_sizes: int) -> void:
+	_output_sizes |= output_sizes
+
+
+func remove_output_sizes(output_sizes: int) -> void:
+	_output_sizes &= ~output_sizes
+
+
 func add_source_image(path: String, size_flag: int) -> int:
 	var source_image: Image = Image.new()
 	var err: int = _load_image_file(path, source_image)
 	if err:
 		return err
 
-	source_image.resource_path = path
+	source_image.take_over_path(path)
 	_source_images[size_flag] = source_image
 	_update_source_size_map()
 
@@ -110,7 +127,7 @@ func get_image(size_flag: int) -> Image:
 	var source_size: int = get_source_size(size_flag)
 	if source_size == ImageSize.NONE:
 		Log.warning("There is no valid source image for image of size %d. Cannot generate a derived image.",
-				[get_dimensions(size_flag)])
+				[derived_image_size])
 		return derived_image
 
 	derived_image.copy_from(_source_images[source_size])
@@ -164,20 +181,6 @@ func has_source_override(size_flag: int) -> bool:
 	return _source_overrides.get(size_flag, ImageSize.NONE) != ImageSize.NONE
 
 
-func get_serialized_data() -> Dictionary:
-	var serialized_data: Dictionary = Dictionary()
-
-	var image_paths: Dictionary = {}
-	for size in _source_images:
-		image_paths[size] = _source_images[size].resource_path
-
-	serialized_data.source_image_paths = image_paths
-	serialized_data.source_overrides = _source_overrides
-	serialized_data.interpolation_modes = _interpolation_modes
-
-	return serialized_data
-
-
 static func get_dimensions(size_flag: int) -> int:
 	match size_flag:
 		ImageSize.x8: return 8
@@ -218,6 +221,8 @@ func _update_source_size_map() -> void:
 
 		_source_map[size] = closest_matching_source_size
 
+	#	Find the size of the next smaller source, for any sizes that don't
+	#	have a larger source.
 	for size in ImageSize.values():
 		if _source_images.has(size):
 			closest_matching_source_size = size

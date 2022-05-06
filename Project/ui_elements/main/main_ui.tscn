@@ -10,21 +10,18 @@
 [node name="MainUI" type="MarginContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 3 )
 custom_constants/margin_right = 6
 custom_constants/margin_top = 6
 custom_constants/margin_left = 6
 custom_constants/margin_bottom = 6
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MainUIContainer" type="VBoxContainer" parent="."]
 margin_left = 6.0
 margin_top = 6.0
 margin_right = 344.0
 margin_bottom = 786.0
-theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -38,6 +35,7 @@ margin_left = 6.0
 margin_top = 4.0
 margin_right = 332.0
 margin_bottom = 29.0
+items = [ "STANDARD", null, 0, false, false, 0, 0, null, "", true, "x16", null, 1, true, false, 8, 0, null, "", false, "x32", null, 1, true, false, 64, 0, null, "", false, "x48", null, 1, true, false, 256, 0, null, "", false, "x256", null, 1, true, false, 4096, 0, null, "", false, "EXTENDED", null, 0, false, false, 5, 0, null, "", true, "x24", null, 1, false, false, 32, 0, null, "", false, "x64", null, 1, false, false, 512, 0, null, "", false, "x96", null, 1, false, false, 1024, 0, null, "", false, "x128", null, 1, false, false, 2048, 0, null, "", false, "SPECIALIZED", null, 0, false, false, 10, 0, null, "", true, "x8", null, 1, false, false, 1, 0, null, "", false, "x10", null, 1, false, false, 2, 0, null, "", false, "x14", null, 1, false, false, 4, 0, null, "", false, "x22", null, 1, false, false, 16, 0, null, "", false, "x40", null, 1, false, false, 128, 0, null, "", false ]
 
 [node name="TopSeperator" type="HSeparator" parent="MainUIContainer"]
 margin_top = 37.0
@@ -80,6 +78,7 @@ margin_right = 338.0
 margin_bottom = 751.0
 
 [node name="GenerateICO" parent="MainUIContainer" instance=ExtResource( 5 )]
+anchor_right = 0.0
 margin_top = 755.0
 margin_right = 338.0
 margin_bottom = 780.0
@@ -87,3 +86,4 @@ margin_bottom = 780.0
 [connection signal="sizes_changed" from="MainUIContainer/Sizes/SizeSelector" to="." method="_on_SizeSelector_sizes_changed"]
 [connection signal="should_export_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_export_icogen_file"]
 [connection signal="should_import_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_import_icogen_file"]
+[connection signal="wants_to_save" from="MainUIContainer/GenerateICO" to="." method="_on_GenerateICO_wants_to_save"]
