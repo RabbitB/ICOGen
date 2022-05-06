@@ -7,9 +7,6 @@
 margin_right = 238.0
 margin_bottom = 20.0
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ImportICOGen" type="Button" parent="."]
 margin_right = 118.0
