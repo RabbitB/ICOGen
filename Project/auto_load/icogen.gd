@@ -5,6 +5,7 @@ extends Node
 signal active_data_replaced()
 signal active_data_changed()
 
+
 const INT_MAX: int = 2^63 - 1
 const MIN_WINDOW_SIZE: Vector2 = Vector2(350, 420)
 
