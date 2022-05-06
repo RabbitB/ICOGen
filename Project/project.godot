@@ -97,7 +97,7 @@ window/dpi/allow_hidpi=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "krakatoa" )
+enabled=PoolStringArray( "res://addons/Todo_Manager/plugin.cfg", "res://addons/krakatoa/plugin.cfg" )
 
 [importer_defaults]
 
