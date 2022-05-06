@@ -11,7 +11,7 @@ export(String, FILE) var config_file_path: String = "user://persistent.cfg"
 func _ready():
 	self.connect("about_to_show", self, "_on_about_to_show_persistent")
 	self.connect("dir_selected", self, "_on_dir_selected_persistent")
-	self.connect("file_selected", self, "_on_dir_selected_persistent")
+	self.connect("file_selected", self, "_on_file_selected_persistent")
 	self.connect("files_selected", self,"_on_files_selected_persistent")
 
 
@@ -53,12 +53,7 @@ func _on_about_to_show_persistent() -> void:
 
 
 func _on_dir_selected_persistent(dir: String) -> void:
-	# Sometimes selecting a file triggers this signal even though it shouldn't.
-	# So we account for that scenario.
-	if dir.get_extension():
-		save_persistent_data(dir.get_base_dir())
-	else:
-		save_persistent_data(dir)
+	save_persistent_data(dir)
 
 
 func _on_file_selected_persistent(file: String) -> void:
