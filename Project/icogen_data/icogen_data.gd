@@ -118,25 +118,23 @@ func has_no_sources() -> bool:
 
 
 func get_image(size_flag: int) -> Image:
-	var derived_image: Image = Image.new()
-	var derived_image_size: int = get_dimensions(size_flag)
-
 	if has_no_sources():
-		return derived_image
+		return Image.new()
 
 	var source_size: int = get_source_size(size_flag)
+	var target_size: int = get_dimensions(size_flag)
+
 	if source_size == ImageSize.NONE:
-		Log.warning("There is no valid source image for image of size %d. Cannot generate a derived image.",
-				[derived_image_size])
-		return derived_image
+		Log.warning(
+				"""There is no valid source image for image of size %d.
+				Cannot generate a derived image.""",
+				[target_size])
+		return Image.new()
 
-	derived_image.copy_from(_source_images[source_size])
-	derived_image.resize(
-			derived_image_size,
-			derived_image_size,
+	return _create_square_image_keep_aspect_ratio(
+			_source_images[source_size],
+			target_size,
 			get_interpolation_mode(size_flag))
-
-	return derived_image
 
 
 func get_image_path(size_flag: int) -> String:
@@ -201,6 +199,52 @@ static func get_dimensions(size_flag: int) -> int:
 
 static func get_dimensions_string(size_flag: int) -> String:
 	return "%s%d" % [N_ARY_TIMES_OPERATOR, get_dimensions(size_flag)]
+
+
+func _create_square_image_keep_aspect_ratio(src_image: Image, target_size: int, interpolation_mode: int) -> Image:
+	var src_width: int = src_image.get_width()
+	var src_height: int = src_image.get_height()
+
+	var intermediate_width: int = target_size
+	var intermediate_height: int = target_size
+
+	#	If the image is already square, we can just resize to the target size
+	#	and continue without need for additional steps.
+	if src_width == src_height:
+		var output_image: Image = Image.new()
+		output_image.copy_from(src_image)
+		output_image.resize(target_size, target_size, interpolation_mode)
+
+		return output_image
+	elif src_width > src_height:
+		var aspect_ratio: float = src_height / (src_width as float)
+		intermediate_height = round(target_size * aspect_ratio) as int
+	else:
+		var aspect_ratio: float = src_width / (src_height as float)
+		intermediate_width = round(target_size * aspect_ratio) as int
+
+	var intermediate_image: Image = Image.new()
+	intermediate_image.copy_from(src_image)
+	intermediate_image.resize(intermediate_width, intermediate_height, interpolation_mode)
+
+	var output_image: Image = Image.new()
+	output_image.create(target_size, target_size, false, intermediate_image.get_format())
+
+	var blit_region: Rect2 = intermediate_image.get_used_rect()
+	_blit_and_center_rect(intermediate_image, output_image, blit_region)
+
+	return output_image
+
+
+func _blit_and_center_rect(src_image: Image, target_image: Image, src_rect: Rect2):
+	if src_rect.size.x > target_image.get_width() || src_rect.size.y > target_image.get_height():
+		Log.warning(
+				"""Cannot blit from src to target image, because the desired
+				rect to blit is larger than the target image.""")
+		return
+
+	var blit_pos: Vector2 = (target_image.get_size() - src_rect.size) / 2
+	target_image.blit_rect(src_image, src_rect, blit_pos)
 
 
 func _update_source_size_map() -> void:
