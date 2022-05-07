@@ -22,7 +22,11 @@ func _ready():
 
 
 func save_ico_file(path: String) -> void:
-	pass
+	var err: int = ResourceSaver.save(path, ICOGen.active_data)
+	if err:
+		Log.error(
+				"Could not save the ICO file to %s. Encountered error %s",
+				[path, Log.get_error_description(err)])
 
 
 func import_icogen_file(path: String) -> void:
