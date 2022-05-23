@@ -42,21 +42,28 @@ func load(path: String, _original_path: String):
 		uncompressed_data = file.get_buffer(uncompressed_size)
 
 	file.close()
-	return _deserialize(bytes2var(uncompressed_data))
+	return _deserialize(bytes2var(uncompressed_data), path.get_base_dir())
 
 
-static func _deserialize(serialized_data: Dictionary) -> ICOGenData:
+static func _deserialize(serialized_data: Dictionary, relative_root_path: String) -> ICOGenData:
 	var icogen_data: ICOGenData = ICOGenData.new()
+	var file_checker: File = File.new()
 
 	icogen_data.set_output_sizes(serialized_data.output_sizes)
 
 	for size in serialized_data.source_image_paths:
 		var source_path: String = serialized_data.source_image_paths[size]
+
+		#	If the file can't be found at its original path, we'll look for it
+		#	in the same directory as the icogen file.
+		if !file_checker.file_exists(source_path):
+			source_path = relative_root_path.plus_file(source_path.get_file())
+
 		var err: int = icogen_data.add_source_image(source_path, size)
 		if err:
 			Log.error(
-					"""Encountered error %s when attempting to load source image
-					for size %d, from file %s. This source image will be skipped.""",
+					"Encountered error %s when attempting to load source image" +\
+					"for size %d, from file %s. This source image will be skipped.",
 					[Log.get_error_description(err),
 					ICOGenData.get_dimensions(size),
 					source_path])
