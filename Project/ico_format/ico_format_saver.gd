@@ -5,6 +5,8 @@ extends ResourceFormatSaver
 
 
 const FILE_EXT: String = "ico"
+const ICO_HEADER_SIZE: int = 6
+const ICO_DIRENTRY_SIZE: int = 16
 
 
 func get_recognized_extensions(resource: Resource) -> PoolStringArray:
@@ -41,7 +43,7 @@ func save(path: String, resource: Resource, _flags: int) -> int:
 
 	#	The initial offset for the first image is the size of the header, plus
 	#	the size of an image entry multiplied by the number of images.
-	var previous_image_byte_offset: int = 6 + (output_image_count * 16)
+	var previous_image_byte_offset: int = ICO_HEADER_SIZE + (output_image_count * ICO_DIRENTRY_SIZE)
 	for size in output_sizes:
 		output_image_offsets[size] = previous_image_byte_offset
 		previous_image_byte_offset += output_image_buffers[size].size()
