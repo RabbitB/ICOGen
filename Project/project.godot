@@ -98,12 +98,12 @@ ICOGen="*res://auto_load/icogen.gd"
 [display]
 
 window/size/width=350
-window/size/height=792
+window/size/height=804
 window/dpi/allow_hidpi=true
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/Todo_Manager/plugin.cfg", "res://addons/krakatoa/plugin.cfg" )
+enabled=PoolStringArray( "res://addons/krakatoa/plugin.cfg" )
 
 [importer_defaults]
 
