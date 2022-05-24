@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://ui_elements/main/main_ui.gd" type="Script" id=1]
 [ext_resource path="res://ui_elements/size_selector/size_selector.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://ui_elements/io_buttons/import_export_icogen.tscn" type="PackedScene" id=4]
 [ext_resource path="res://ui_elements/io_buttons/generate_ico.tscn" type="PackedScene" id=5]
 [ext_resource path="res://theme/seperator.stylebox" type="StyleBox" id=6]
+[ext_resource path="res://ui_elements/info_seperator/info_seperator.tscn" type="PackedScene" id=7]
 
 [node name="MainUI" type="MarginContainer"]
 anchor_right = 1.0
@@ -21,7 +22,7 @@ script = ExtResource( 1 )
 margin_left = 6.0
 margin_top = 6.0
 margin_right = 344.0
-margin_bottom = 786.0
+margin_bottom = 798.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -66,22 +67,23 @@ margin_bottom = 661.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="BottomSeperator" type="HSeparator" parent="MainUIContainer"]
+[node name="InfoSeperator" parent="MainUIContainer" instance=ExtResource( 7 )]
+anchor_right = 0.0
 margin_top = 718.0
 margin_right = 338.0
-margin_bottom = 722.0
-custom_styles/separator = ExtResource( 6 )
+margin_bottom = 734.0
 
 [node name="ICOGenButtons" parent="MainUIContainer" instance=ExtResource( 4 )]
-margin_top = 726.0
+margin_top = 738.0
 margin_right = 338.0
-margin_bottom = 751.0
+margin_bottom = 763.0
 
 [node name="GenerateICO" parent="MainUIContainer" instance=ExtResource( 5 )]
 anchor_right = 0.0
-margin_top = 755.0
+margin_top = 767.0
 margin_right = 338.0
-margin_bottom = 780.0
+margin_bottom = 792.0
+size_flags_horizontal = 3
 
 [connection signal="sizes_changed" from="MainUIContainer/Sizes/SizeSelector" to="." method="_on_SizeSelector_sizes_changed"]
 [connection signal="should_export_icogen_file" from="MainUIContainer/ICOGenButtons" to="." method="_on_export_icogen_file"]
