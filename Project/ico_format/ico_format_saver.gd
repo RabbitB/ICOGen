@@ -35,7 +35,11 @@ func save(path: String, resource: Resource, _flags: int) -> int:
 	var output_image_buffers: Dictionary = {}
 	var output_image_offsets: Dictionary = {}
 
-	var output_sizes: SetBitIterator = SetBitIterator.new(icogen_data.get_output_sizes())
+	var output_sizes: SetBitIterator = \
+			SetBitIterator.new(
+					icogen_data.get_output_sizes(),
+					SetBitIterator.MSB_TO_LSB)
+
 	for size in output_sizes:
 		output_image_count += 1
 		output_images[size] = icogen_data.get_image(size)
