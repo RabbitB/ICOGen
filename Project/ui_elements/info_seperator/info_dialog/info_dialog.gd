@@ -21,17 +21,19 @@ func _ready():
 	get_viewport().connect("size_changed", self, "_on_viewport_size_changed")
 	get_close_button().visible = false
 
-	_about.bbcode_text = "%s%s" % \
-			[_make_url(_make_image(LOGO_IMG_PATH), ICOGEN_URL), _get_about_info()]
+	_about.bbcode_text = "%s%s%s" % \
+			[_make_url(_make_image(LOGO_IMG_PATH), ICOGEN_URL),
+			_make_url("Visit on itch.io", "https://dfaction.itch.io/icogen", HEADER_COLOR),
+			_get_about_info()]
 
 	_copyright.bbcode_text = "\n%s" % _get_copyright_info()
 	_licenses.bbcode_text = "\n%s" % _get_license_info()
 
 
 func _get_about_info() -> String:
-	var description_text: String = "A lightweight GUI based .ico file creator that supports " + \
-			"mixed icon sizes, and provides fine-grained control over source images and " + \
-			"automatic image resizing."
+	var description_text: String = "​A lightweight, GUI based .ico file creator. " + \
+			"Supports mixed icon sizes, automatic image generation and fine-grained " + \
+			"control over source images."
 
 	var output: String = _center_text("By")
 	output += _make_url(_make_image(DFACTION_IMG_PATH, 128), DFACTION_URL)
@@ -41,6 +43,10 @@ func _get_about_info() -> String:
 	output += _center_text(_make_labeled_line("License", "Expat"))
 	output += "\n"
 	output += _justify_text(description_text)
+
+	#	Godot can't automatically pull the project's version number. There's
+	#	more complicated ways to work around this, but for now, just hard-code.
+	output += _center_text(_make_labeled_line("Version", "1.0"))
 
 	return output
 
