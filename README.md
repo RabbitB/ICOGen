@@ -4,6 +4,8 @@
 
 A lightweight GUI based .ico file creator that supports mixed icon sizes, and provides fine-grained control over source images and automatic image resizing.
 
+### [Releases available on itch.io](https://dfaction.itch.io/icogen)
+
 ## How to Use
 
 ### Select image-sizes to embed
