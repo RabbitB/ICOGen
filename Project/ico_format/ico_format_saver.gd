@@ -42,7 +42,11 @@ func save(path: String, resource: Resource, _flags: int) -> int:
 
 	for size in output_sizes:
 		output_image_count += 1
-		output_images[size] = icogen_data.get_image(size)
+
+		var argb8_image: Image = icogen_data.get_image(size)
+		_convert_to_argb8(argb8_image)
+
+		output_images[size] = argb8_image
 		output_image_buffers[size] = output_images[size].save_png_to_buffer()
 
 	#	The initial offset for the first image is the size of the header, plus
@@ -80,7 +84,7 @@ func save(path: String, resource: Resource, _flags: int) -> int:
 	for size in output_sizes:
 		var img_width: int = output_images[size].get_width()
 		var img_height: int = output_images[size].get_height()
-		var bits_per_pixel: int = ((output_image_buffers[size].size() as float) / (img_width * img_height) * 8) as int
+		var bits_per_pixel: int = 32	# Only supported png format is ARGB8, so always 32bpp
 
 		if img_width > 255:
 			img_width = 0
@@ -102,4 +106,9 @@ func save(path: String, resource: Resource, _flags: int) -> int:
 		file.store_buffer(output_image_buffers[size])
 
 	return OK
+
+
+func _convert_to_argb8(source_image: Image) -> void:
+	if source_image.get_format() != Image.FORMAT_RGBA8:
+		source_image.convert(Image.FORMAT_RGBA8)
 
