@@ -46,7 +46,7 @@ func _get_about_info() -> String:
 
 	#	Godot can't automatically pull the project's version number. There's
 	#	more complicated ways to work around this, but for now, just hard-code.
-	output += _center_text(_make_labeled_line("Version", "1.0"))
+	output += _center_text(_make_labeled_line("Version", "1.0.1"))
 
 	return output
 
